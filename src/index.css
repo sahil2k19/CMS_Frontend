@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.article-card-hover:hover{
+  background: black;
+  color:white;
+  scale: 1.05;
+  transition:  0.3s ease-in-out;
+}
+
+.text-purple{
+  color:#8c34ff
+}
+.article-card-hover-reverse{
+  background: white;
+  color:black;
+  scale: 1.05;
+  transition:  0.3s ease-in-out;
+}
+
+
