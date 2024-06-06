@@ -4,13 +4,22 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token') || null);
-    const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('userData') || null));
+    const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('userData')) || null);
 
     useEffect(() => {
-
+        // Function to update state based on localStorage changes
+        const handleStorageChange = () => {
             setToken(localStorage.getItem('token') || null);
+            setUserData(JSON.parse(localStorage.getItem('userData')) || null);
+        };
 
-            setUserData(JSON.parse(localStorage.getItem('userData') || null));
+        // Add event listener for storage changes
+        window.addEventListener('storage', handleStorageChange);
+
+        // Cleanup event listener on component unmount
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const updateAuthData = (newToken, newUserData) => {

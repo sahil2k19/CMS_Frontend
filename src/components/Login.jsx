@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,13 +16,43 @@ const Login = () => {
         if (response.data?.token && response.data.result) {
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('userData', JSON.stringify(response.data.result));
-          navigate('/');
+          window.location.href = '/';
         } else {
           console.log('Token not found in the response');
         }
       })
       .catch((error) => {
-        console.error('Error during login:', error);
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          if (error.response.status === 400) {
+            Swal.fire({
+              icon: 'error',
+              title: 'User Not Found',
+              text: 'The user does not exist. Please check your credentials or sign up.',
+            });
+          } else if (error.response.status === 401) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Wrong Credentials',
+              text: 'The email or password you entered is incorrect.',
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'An unexpected error occurred. Please try again later.',
+            });
+          }
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error('Error during login:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An unexpected error occurred. Please try again later.',
+          });
+        }
       });
   };
 
@@ -48,7 +79,7 @@ const Login = () => {
         <div className='py-4'>
           <h1 className='text-center fs-1 fw-bolder'>Login</h1>
         </div>
-        <div className='d-flex justify-content-center p-5 bg-light shadow rounded-4'>
+        <div className='d-flex justify-content-center p-5 bg-light shadow rounded-4' style={{minWidth:"300px"}}>
           <form onSubmit={formik.handleSubmit}>
             <div className='d-flex flex-column justify-content-center'>
               <div className='mb-4'>
@@ -79,9 +110,16 @@ const Login = () => {
                   helperText={formik.touched.password && formik.errors.password}
                 />
               </div>
-              <div>
-                <Button type="submit" variant="contained" color="primary">
+              <div className='d-flex mb-4 justify-content-center'>
+              
+                <Button type="submit" className='fw-bolder' variant="contained" color="primary">
                   Login
+                </Button>
+              </div>
+              <div className='d-flex justify-content-center align-content-center flex-column'>
+              <span className='text-center mb-2 fs-6 fw-semibold'>Don't have an account?</span>
+                <Button variant="contained" color="primary" onClick={() => navigate('/register')} className='fw-bolder'>
+                  Create New Account
                 </Button>
               </div>
             </div>

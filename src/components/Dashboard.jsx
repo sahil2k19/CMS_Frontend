@@ -5,9 +5,11 @@ import { Button, TextField } from '@mui/material'
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import ModalForArticle from './ModalForArticle';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const { userData, token } = useContext(AuthContext)
+  const navigate = useNavigate()
+  const { userData, token,clearAuthData } = useContext(AuthContext)
   const [openModal, setOpenModal] = useState(false)
   const [articleArray, setArticleArray] = useState([])
 
@@ -24,6 +26,10 @@ const Dashboard = () => {
 
   const handleModal = () => {
     setOpenModal(!openModal)
+  }
+  const handleLogout = () => {
+    clearAuthData()
+    navigate("/login")
   }
 
   useEffect(() => {
@@ -49,7 +55,9 @@ const Dashboard = () => {
         </div>
       </div>
       <ModalForArticle openModal={openModal} add={true} handleModal={handleModal} getArticles={getArticles} setOpenModal={setOpenModal} />
-   
+      <div className='d-flex justify-content-center'>
+      <Button onClick={handleLogout} variant='contained' className='fs-5 text-capitalize fw-bolder'>Logout</Button>
+      </div>
     </>
   )
 }
