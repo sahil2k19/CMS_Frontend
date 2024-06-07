@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Articles from './Articles'
-import { Button, TextField } from '@mui/material'
+import { Button, CircularProgress, TextField } from '@mui/material'
 
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate = useNavigate()
+  const [loader, setLoader] = useState(true);
+
   const { userData, token,clearAuthData } = useContext(AuthContext)
   const [openModal, setOpenModal] = useState(false)
   const [articleArray, setArticleArray] = useState([])
@@ -16,10 +18,15 @@ const Dashboard = () => {
 
 
   const getArticles = () => {
+    setLoader(true)
     axios.get(`${process.env.REACT_APP_API_URL}article/all/${userData?.id}`)
       .then((res) => {
+        setLoader(false)
         setArticleArray(res.data.result)
-      }).catch((err) => { console.log(err) })
+      }).catch((err) => {
+        setLoader(false)
+         console.log(err)
+         })
   }
 
 
@@ -45,7 +52,10 @@ const Dashboard = () => {
             <h3 className='fs-2 fw-bold ms-3' style={{ color: 'black' }}>All Articles</h3>
             <Button onClick={handleModal} variant='contained' className='fs-5 text-capitalize'>Add Article</Button>
           </div>
-        {articleArray?.length>0?  <div className='row px-4 py-4'>
+        {loader?<div className='d-flex justify-content-center align-items-center' style={{height:"300px"}} >
+          <CircularProgress size={60}/> 
+        </div>
+        :articleArray?.length>0?  <div className='row px-4 py-4'>
             {articleArray?.map((article) => (
               <div key={article.id} className='col-12 col-md-6 col-lg-4 mb-4'>
                 <Articles article={article} getArticles={getArticles} />

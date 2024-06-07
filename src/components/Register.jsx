@@ -1,21 +1,34 @@
-import React from 'react';
-import { TextField, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { TextField, Button, CircularProgress } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Register = () => {
   const navigate = useNavigate();
+  const [loader, setLoader] = useState(false);
 
   const handleRegister = (name, email, password) => {
+    setLoader(true)
     const data = { name, email, password };
     axios.post(`${process.env.REACT_APP_API_URL}register`, data)
       .then((response) => {
           navigate('/login');
+          setLoader(false)
       })
       .catch((error) => {
-        console.error('Error during registration:', error);
+        setLoader(false)
+        if (error.response && error.response.status === 400) {
+          Swal.fire({
+            icon: 'error',
+            title: 'User Already Exists',
+            text: 'The user already exists. Please try again.',
+          });
+        } else {
+          console.error('Error during registration:', error);
+        }
       });
   };
 
@@ -90,9 +103,9 @@ const Register = () => {
                 />
               </div>
               <div className='d-flex justify-content-center mb-4'>
-                <Button type="submit" className='fw-bolder' variant="contained" color="primary">
+              { loader? <CircularProgress sx={{color:"black"}}/> : <Button type="submit" className='fw-bolder' variant="contained" color="primary">
                   Register
-                </Button>
+                </Button>}
               </div>
               <div className='d-flex flex-column align-items-center justify-content-center'>
               <span className='text-center mb-2 fs-6 fw-semibold'>Already have an account?</span>

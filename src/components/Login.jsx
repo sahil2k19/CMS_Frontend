@@ -1,5 +1,5 @@
-import React from 'react';
-import { TextField, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { TextField, Button, CircularProgress } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -8,11 +8,13 @@ import Swal from 'sweetalert2';
 
 const Login = () => {
   const navigate = useNavigate();
-
+  const [loader, setLoader] = useState(false);
   const handleLogin = (email, password) => {
+    setLoader(true);
     const data = { email, password };
     axios.post(`${process.env.REACT_APP_API_URL}login`, data)
       .then((response) => {
+        setLoader(false);
         if (response.data?.token && response.data.result) {
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('userData', JSON.stringify(response.data.result));
@@ -22,9 +24,9 @@ const Login = () => {
         }
       })
       .catch((error) => {
+        setLoader(false);
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
+        
           if (error.response.status === 400) {
             Swal.fire({
               icon: 'error',
@@ -112,9 +114,9 @@ const Login = () => {
               </div>
               <div className='d-flex mb-4 justify-content-center'>
               
-                <Button type="submit" className='fw-bolder' variant="contained" color="primary">
+             {loader?<CircularProgress sx={{ color: 'black' }} />:   <Button type="submit" className='fw-bolder' variant="contained" color="primary">
                   Login
-                </Button>
+                </Button>}
               </div>
               <div className='d-flex justify-content-center align-content-center flex-column'>
               <span className='text-center mb-2 fs-6 fw-semibold'>Don't have an account?</span>
