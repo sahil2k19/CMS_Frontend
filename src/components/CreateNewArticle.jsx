@@ -3,10 +3,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Button} from '@mui/material';
 import CreateNewArticleLeft from './CreateNewArticleLeft';
 import CreateNewArticleRight from './CreateNewArticleRight';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 const CreateNewArticle = () => {
   const navigate = useNavigate();
+  const location = useLocation()
   const [loader, setLoader] = useState(false);
     const {id} = useParams();
     const [articleData, setArticleData] = useState({
@@ -26,6 +27,18 @@ const CreateNewArticle = () => {
         }).catch((err) => { setLoader(false); console.log(err) });
       }
     },[])
+    useEffect(()=>{
+      if(id){
+        setLoader(true)
+        axios.get(`${process.env.REACT_APP_API_URL}article/${id}`)
+        .then((res) => {
+         setLoader(false)
+          setArticleData(res.data.result);
+        }).catch((err) => { setLoader(false); console.log(err) });
+      }else{
+        setArticleData({title:"",paragraph:"",visibility:"Public",Category:[],tags:[]})
+      }
+    },[location.pathname])
 
   return (
     <>

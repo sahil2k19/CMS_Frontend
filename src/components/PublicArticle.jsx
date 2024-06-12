@@ -5,39 +5,38 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const ShowAllArticles = () => {
-  const navigate = useNavigate();
-  const { userData } = useContext(AuthContext);
-  const [articles, setArticles] = useState([]);
-  const [loader, setLoader] = useState(true);
-  const getAllArticles = () => {
-    setLoader(true)
-    axios.get(`${process.env.REACT_APP_API_URL}article/all/${userData?.id}`)
-      .then((res) => {
-        setLoader(false)
-        setArticles(res.data.result);
-      }).catch((err) => { 
-        setLoader(false);
-         console.log(err) 
-        });
-  };
-
-  const cardClick = (id) => {
-    navigate(`/articles/${id}`)
-  }
-
-  useEffect(() => {
-    getAllArticles();
-  }, []);
-
+const PublicArticle = () => {
+    const navigate = useNavigate();
+    const { userData } = useContext(AuthContext);
+    const [articles, setArticles] = useState([]);
+    const [loader, setLoader] = useState(true);
+    const getAllArticles = () => {
+      setLoader(true)
+      axios.get(`${process.env.REACT_APP_API_URL}article/all`)
+        .then((res) => {
+          setLoader(false)
+          setArticles(res.data.result);
+        }).catch((err) => { 
+          setLoader(false);
+           console.log(err) 
+          });
+    };
+  
+    const cardClick = (id) => {
+      navigate(`/public/article/${id}`)
+    }
+  
+    useEffect(() => {
+      getAllArticles();
+    }, []);
   return (
     <>
-      <Button size='small'  onClick={() => navigate('/')} color='primary' variant='contained' className='p-0 mt-4'>
-        <ArrowBackIcon className='m-0 p-0' sx={{ fontSize: "30px" }} />
-      </Button>
-      <div className='container mt-5'>
-        <div className='row'>
-          {loader?<div className='d-flex justify-content-center'>
+        <div>
+            <div className='d-flex justify-content-center'>
+                <h1>All Articles</h1>
+            </div>
+            <div className='row container'>
+            {loader?<div className='d-flex justify-content-center'>
             <CircularProgress />
           </div>:
            articles?.length > 0 && !loader ? articles?.map(article => {
@@ -62,10 +61,10 @@ const ShowAllArticles = () => {
                     </Button>    
             </div>
           }
+            </div>
         </div>
-      </div>
     </>
   )
-};
+}
 
-export default ShowAllArticles;
+export default PublicArticle
