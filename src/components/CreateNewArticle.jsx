@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 const CreateNewArticle = () => {
   const navigate = useNavigate();
+  const [loader, setLoader] = useState(false);
     const {id} = useParams();
     const [articleData, setArticleData] = useState({
         title: "",
@@ -17,27 +18,36 @@ const CreateNewArticle = () => {
     })
     useEffect(()=>{
       if(id){
+        setLoader(true)
         axios.get(`${process.env.REACT_APP_API_URL}article/${id}`)
         .then((res) => {
-         
+         setLoader(false)
           setArticleData(res.data.result);
-        }).catch((err) => { console.log(err) });
+        }).catch((err) => { setLoader(false); console.log(err) });
       }
     },[])
 
   return (
     <>
-     <Button size='small' onClick={() =>navigate('/articles/all')} color='primary'  variant='contained' className='p-0 m-0 me-3'>
+     <Button size='small' onClick={() =>
+     {
+      if(id){
+
+        navigate('/articles/all')
+      }else{
+        navigate('/')
+      }
+      }} color='primary'  variant='contained' className='p-0 m-0 me-3'>
             <ArrowBackIcon className=' m-0 p-0 ' sx={{fontSize:"30px"}} />
           </Button>
          
         <div className=''>
             <div className='row'>
                 <div className='col-12 col-md-8 border'>
-                    <CreateNewArticleLeft articleData={articleData} setArticleData={setArticleData}/>
+                    <CreateNewArticleLeft articleData={articleData} loader={loader} setArticleData={setArticleData}/>
                 </div>
                 <div className='col-12 col-md-4 border'>
-                    <CreateNewArticleRight articleData={articleData} setArticleData={setArticleData}/>
+                    <CreateNewArticleRight articleData={articleData} loader={loader} setArticleData={setArticleData}/>
                 </div>
             </div>
         </div>      

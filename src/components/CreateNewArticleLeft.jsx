@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react';
 import ReactQuill from 'react-quill';
@@ -7,19 +7,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../context/AuthContext';
 
-const CreateNewArticleLeft = ({ articleData, setArticleData }) => {
+const CreateNewArticleLeft = ({ articleData, setArticleData, loader }) => {
   const {id} = useParams()
   const navigate = useNavigate();
   const { userData, token,clearAuthData } = useContext(AuthContext)
+  
+  // const [editorContent, setEditorContent] = useState('');
 
-  const [editorContent, setEditorContent] = useState('');
-
-  useEffect(() => {
-    setEditorContent(articleData?.paragraph);
-  }, [articleData?.paragraph]);
+  // useEffect(() => {
+  //   setEditorContent(articleData?.paragraph);
+  // }, [articleData]);
 
   const handleEditorChange = (content) => {
-    setEditorContent(content);
     setArticleData((prevData) => ({ ...prevData, paragraph: content }));
   };
 
@@ -35,8 +34,21 @@ const CreateNewArticleLeft = ({ articleData, setArticleData }) => {
       handleCreate()
     }
   }
+  const checkEmpty = ()=>{
+    if(!articleData?.title || !articleData?.paragraph){
+      return true
+    }
+  }
 
   const handleCreate = ()=>{
+    if(checkEmpty()){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'All fields are required',
+      })
+      return 
+    }
     axios.post(`${process.env.REACT_APP_API_URL}article` ,{...articleData, userId:userData?.id})
     .then((res)=>{
       navigate('/articles/all')
@@ -50,6 +62,14 @@ const CreateNewArticleLeft = ({ articleData, setArticleData }) => {
   }
 
   const handleUpdate = ()=>{
+    if(checkEmpty()){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'All fields are required',
+      })
+      return 
+    }
     axios.put(`${process.env.REACT_APP_API_URL}article/${id}` ,{...articleData, userId:userData?.id})
     .then((res)=>{
       navigate('/articles/all')
@@ -61,24 +81,49 @@ const CreateNewArticleLeft = ({ articleData, setArticleData }) => {
       console.log(err)
     })
   }
-  
+
+  const handleDelete = ()=>{
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${process.env.REACT_APP_API_URL}article/${id}`)
+        .then((res)=>{
+          navigate('/articles/all')
+        }).then((res)=>{
+
+          Swal.fire("Deleted!", "", "success");
+      })}})
+    }
 
   return (
     <>
       <div className='d-flex justify-content-end'>
-        <Button size='small' onClick={handleSave} variant='contained' color='primary' className=' fs-5 text-capitalize fw-semibold'>{id?"Save Post":"Create Post"}</Button>
+        <Button size='small' onClick={handleSave} variant='contained' color='success' className=' fs-6 me-3 text-capitalize fw-semibold'>{id?"Save":"Create"}</Button>
+        {id &&<Button disabled={loader} size='small' onClick={handleDelete} variant='contained' color='error' className=' fs-6 text-capitalize fw-semibold'>Delete</Button>}
       </div>
       <div>
         <div className='d-flex justify-content-center mt-4'>
-        <input value={articleData?.title} className='fs-1 fw-bolder ' style={{background:'transparent', border:'none', outline:'none'}} onChange={handleTitleChange} placeholder='Enter Your Title Here'/>
+       {loader?<div className='d-flex justify-content-center '>
+        <CircularProgress/>
+       </div>
+       :
+         <input value={articleData?.title} className='fs-1 fw-bolder ' style={{background:'transparent', border:'none', outline:'none'}} onChange={handleTitleChange} placeholder='Enter Your Title Here'/>
 
+       }
  </div>
         <div className='mt-4 mb-5 mx-5' style={{ borderBottom: '1px solid grey' }}></div>
 
         <div className='px-5'>
           <ReactQuill
             style={{ background: 'white' }}
-            value={editorContent}
+            value={articleData?.paragraph}
             onChange={handleEditorChange}
             className='mb-5'
           />

@@ -11,14 +11,14 @@ import 'react-quill/dist/quill.snow.css';
 
 const CreateNewArticleRight = ({articleData, setArticleData}) => {
   const [value, setValue] = useState(0);
-  const [editorContent, setEditorContent] = useState('');
+  // const [editorContent, setEditorContent] = useState('');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const handleEditorChange = (content) => {
-    setEditorContent(content);
+    // setEditorContent(content);
     setArticleData(prevState => ({ ...prevState, paragraph: content }));
   };
 
@@ -37,9 +37,9 @@ const CreateNewArticleRight = ({articleData, setArticleData}) => {
   const handleTitleChange = (event) => {
     setArticleData(prevState => ({ ...prevState, title: event.target.value }));
   };
-  useEffect(()=>{
-    setEditorContent(articleData?.paragraph)
-  },[articleData])
+  // useEffect(()=>{
+  //   // setEditorContent(articleData?.paragraph)
+  // },[articleData])
 
   const modules = {
     toolbar: [
@@ -154,7 +154,7 @@ const CreateNewArticleRight = ({articleData, setArticleData}) => {
               <AccordionDetails>
                 <div className='row align-items-center'>
                   <ReactQuill 
-                    value={editorContent} 
+                    value={articleData?.paragraph} 
                     onChange={handleEditorChange} 
                     modules={modules} 
                     formats={['font', 'size', 'bold', 'italic', 'underline', 'link']} 
