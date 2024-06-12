@@ -32,4 +32,22 @@ code {
   transition:  0.3s ease-in-out;
 }
 
+.article-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* Show only 4 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 6.0em; /* Adjust based on font size and line height */
+}
+
+.article-title-new {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Show only 4 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 6.0em; /* Adjust based on font size and line height */
+}
+
 
